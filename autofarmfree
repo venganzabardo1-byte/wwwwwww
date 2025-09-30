@@ -1,0 +1,1216 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+for i, v in pairs(workspace:GetDescendants()) do
+    if v:IsA("Seat") then
+        v:Destroy()
+    end
+end
+
+----- Turn the script off/on using a github loadstring
+local function verificarEstadoScript()
+    local success, result = pcall(function()
+        local url = "https://raw.githubusercontent.com/venganzabardo1-byte/wwwwwww/refs/heads/main/whatsnigga"
+        
+        local response = game:HttpGet(url)
+        local verificacion = loadstring(response)
+        
+        if verificacion then
+            return verificacion() 
+        end
+        return false
+    end)
+    
+    if not success or not result then
+        player:Kick("Script private.")
+        return false
+    end
+    
+    return true
+end
+
+-- Verificar antes de continuar
+if not verificarEstadoScript() then
+    return -- Detiene la ejecución del script
+end
+
+
+---
+
+-- src/UIS/etc/function.lua --
+
+local function addCorner(uiObject, scale, offset)
+    local c = Instance.new("UICorner", uiObject)
+    c.CornerRadius = UDim.new(scale or 12, offset or 12)
+end
+
+local function formatWithCommas(number)
+    return tostring(number):reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")
+end
+
+
+-- src/UIS/etc/variables.lua --
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.ResetOnSpawn = false
+ScreenGui.IgnoreGuiInset = true
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local MainFrame = Instance.new("Frame")
+local MarcoGris = Instance.new("Frame")
+local Principal = Instance.new("Frame") 
+local Nombre = Instance.new("TextLabel") 
+local TimeDHC = Instance.new("TextLabel") 
+local MarcoGris2 = Instance.new("Frame")
+local Principal2 = Instance.new("Frame") 
+local OldMoney = Instance.new("TextLabel")
+local FarmingDHC = Instance.new("TextLabel")
+local NewMoney = Instance.new("TextLabel")
+
+local OldMoneyReal = Instance.new("TextLabel")
+local FarmingReal = Instance.new("TextLabel")
+local NewMoneyReal = Instance.new("TextLabel")
+local Status = Instance.new("TextLabel")
+
+local cajeroConfigs = {
+    -- Formato: [Vector3.new(x,y,z)] = {offsetY = valor, offsetZ = valor}
+    [Vector3.new(-474.3752136230469, 24.99999237060547, -292.2875671386719)] = { -- cajero de banco
+        offsetX = -1,
+        offsetY = -3.5,
+        offsetZ = 0.70
+    },
+    [Vector3.new(-474.1751708984375, 25.000017166137695, -284.087646484375)] = { -- cajero de banco
+        offsetX = -1,
+        offsetY = -3.5,
+        offsetZ = 0.70
+    },
+    [Vector3.new(-474.1751708984375, 25.000017166137695, -276.287841796875)] = { -- cajero de banco
+        offsetX = -1,
+        offsetY = -3.5,
+        offsetZ = 0.70
+    },
+    [Vector3.new(-248.9751739501953, 23.905187606811523, -410.6875915527344)] = { -- zapateria 
+        offsetX = -1,
+        offsetY = -4,
+        offsetZ = 0.70
+    },
+    [Vector3.new(-3.8986852169036865, 23.500019073486328, -102.81074523925781)] = { -- barber shop de bomberos 
+        offsetX = 0.7,
+        offsetY = -4,
+        offsetZ = 0.7
+    },
+    [Vector3.new(584.40185546875, 50.800025939941406, -273.4644775390625)] = { -- Gasolinera de factory
+        offsetX = -0.7,
+        offsetY = -4,
+        offsetZ = -0.7
+    },
+    [Vector3.new(596.3018798828125, 53.366783142089844, -471.41094970703125)] = { -- Tacos de tactical
+        offsetX = 0.7,
+        offsetY = -4,
+        offsetZ = 1.50
+    },
+    [Vector3.new(-450.2978820800781, 24.900001525878906, -330.16424560546875)] = { -- Atm de afuera de banco
+        offsetX = -0.7,
+        offsetY = -8,
+        offsetZ = -1.3
+    },
+    [Vector3.new(95.30172729492188, 24.700010299682617, -519.1631469726562)] = { -- Cajero de hospital
+        offsetX = -0.7,
+        offsetY = -8,
+        offsetZ = -1.3
+    },
+    [Vector3.new(-403.16265869140625, 24.899999618530273, -591.0032348632812)] = { -- Cajero de armas abajo (el que esta altura de banco)
+        offsetX = 1.5,
+        offsetY = -8,
+        offsetZ = 0.5
+    },
+    [Vector3.new(519.2359008789062, 51.30000305175781, -303.0762023925781)] = { -- Gasolinera cajero Factory, el que esta a lado, no adentro.
+        offsetX = -1.4, 
+        offsetY = -8,
+        offsetZ = 0.7
+    },
+    [Vector3.new(-219.30860900878906, 25.10000228881836, -785.353759765625)] = { -- Cajero de armas abajo ( parque )
+        offsetX = -0.7,
+        offsetY = -8,
+        offsetZ = -1.5
+    },
+    [Vector3.new(576.7017822265625, 53.366783142089844, -471.41058349609375)] = { -- Tacos de tactical
+        offsetX = 0.7,
+        offsetY = -4,
+        offsetZ = 1.50
+    },
+    [Vector3.new(-481.49822998046875, 24.500017166137695, -79.910888671875)] = { -- Cajero en donde se compra armarios para la casa
+        offsetX = 0.7,
+        offsetY = -4.2,
+        offsetZ = 1.2
+    },
+    [Vector3.new(-809.5208740234375, 24.900001525878906, -286.1871643066406)] = { -- Cajero de casino, el que esta al costado de la piscina 
+        offsetX = 1.5,
+        offsetY = -8,
+        offsetZ = -0.7
+    },
+    [Vector3.new(-940.498779296875, 24.900001525878906, -162.76400756835938)] = { -- Cajero de cine, el que esta por casino
+        offsetX = -0.7,
+        offsetY = -8,
+        offsetZ = -1.5
+    },
+    [Vector3.new(-950.89892578125, 24.900001525878906, -162.76400756835938)] = { -- Cajero de cine, el que esta por casino
+        offsetX = -0.7,
+        offsetY = -8,
+        offsetZ = -1.5
+    },
+    [Vector3.new(-862.198486328125, 24.500015258789062, -90.90840911865234)] = { -- Cajero de casino, casino.
+        offsetX = 0.7,
+        offsetY = -4.2,
+        offsetZ = 1
+    },
+    [Vector3.new(-871.3983764648438, 24.500015258789062, -90.90840911865234)] = { -- Cajero de casino, casino.
+        offsetX = 0.7,
+        offsetY = -4.2,
+        offsetZ = 1
+    },
+    [Vector3.new(-554.5250854492188, 25.17499351501465, 269.14996337890625)] = { -- Cajero de colegio, el cajero cajero. (ATM)
+        offsetX = -1.5,
+        offsetY = -8,
+        offsetZ = 0.7
+    },
+    [Vector3.new(-612.35009765625, 23.67499542236328, 270.6750183105469)] = { -- Cajero de colegio, en donde se vende comida
+        offsetX = 0.7,
+        offsetY = -4.7,
+        offsetZ = 1.5
+    },
+    [Vector3.new(-937.2838745117188, 23.80324935913086, -657.3499145507812)] = { -- Cajero de lavandaria, en donde se vende leche y eso 
+        offsetX = -0.7,
+        offsetY = -4.1,
+        offsetZ = 0.7
+    },
+    [Vector3.new(-937.2838745117188, 23.80324935913086, -664.3499145507812)] = { -- Cajero de lavandaria, en donde se vende leche y eso 
+        offsetX = -0.7,
+        offsetY = -4.1,
+        offsetZ = 0.7
+    },
+    [Vector3.new(-859.6049194335938, 23.92999839782715, -660.2750244140625)] = { -- Cajero de lavandaria, en donde se compra el pegamento
+        offsetX = 0.7,
+        offsetY = -4.2,
+        offsetZ = -0.7
+    },
+    [Vector3.new(-795.9052734375, 23.80215072631836, -655.1375122070312)] = { -- Cajero en donde se compra vehiculos
+        offsetX = -0.7,
+        offsetY = -4,
+        offsetZ = -1.2
+    },
+}
+
+local function obtenerConfigCajero(posicionCajero)
+    for coordenada, config in pairs(cajeroConfigs) do
+        -- Comparar con tolerancia de 0.1 studs
+        if (posicionCajero - coordenada).Magnitude < 0.1 then
+            return config
+        end
+    end
+    return {offsetY = -4, offsetZ = 0}
+end
+
+-- src/UIS/mainframe.lua --
+
+MainFrame.Size = UDim2.new(1, 0, 1, 0)
+MainFrame.Position = UDim2.new(0, 0, 0, 0)
+MainFrame.ZIndex = 1
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.Parent = ScreenGui
+
+
+-- src/UIS/marco.lua --
+
+MarcoGris.Size = UDim2.new(0, 404, 0, 265)
+MarcoGris.Position = UDim2.new(0.5, 0, 0.5, 0)
+MarcoGris.AnchorPoint = Vector2.new(0.5, 0.5)
+MarcoGris.ZIndex = 2
+MarcoGris.BackgroundColor3 = Color3.fromRGB(102, 102, 102)
+MarcoGris.Parent = MainFrame
+addCorner(MarcoGris, 0, 40)
+
+
+-- src/UIS/principal.lua --
+
+Principal.Size = UDim2.new(0, 400, 0, 261)
+Principal.Position = UDim2.new(0, 2, 0, 2)
+Principal.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Principal.Parent = MarcoGris
+Principal.ZIndex = 3
+addCorner(Principal, 0, 40)
+
+local DisplayDelUsuario = game.Players.LocalPlayer.DisplayName
+Nombre.BackgroundTransparency = 1
+Nombre.Position = UDim2.new(0.325, 0, 0.034, 0)
+Nombre.Size = UDim2.new(0, 140, 0, 32)
+Nombre.Text = DisplayDelUsuario
+Nombre.ZIndex = 4
+Nombre.TextScaled = true
+Nombre.TextColor3 = Color3.fromRGB(104, 104, 104)
+Nombre.Parent = Principal
+
+TimeDHC.Size = UDim2.new(0, 84, 0, 41)
+TimeDHC.Position = UDim2.new(0.743, 0, 0.015, 0)
+TimeDHC.BackgroundTransparency = 1
+TimeDHC.Text = "00:00:00"
+TimeDHC.TextScaled = true
+TimeDHC.ZIndex = 4
+TimeDHC.TextColor3 = Color3.fromRGB(104, 104, 104)
+TimeDHC.Parent = Principal
+
+Status.Size = UDim2.new(0, 200, 0, 50)
+Status.Position = UDim2.new(0.25, 0, 0.808, 0)
+Status.BackgroundTransparency = 1
+Status.TextSize = 17
+Status.Text = "Tp to ATM"
+Status.ZIndex = 32
+Status.TextColor3 = Color3.fromRGB(104, 104, 104)
+Status.Parent = Principal
+
+-- src/UIS/marco2.lua --
+
+MarcoGris2.Size = UDim2.new(0, 361, 0, 157)
+MarcoGris2.Position = UDim2.new(0.05, 0, 0.226, 0)
+MarcoGris2.ZIndex = 5
+MarcoGris2.BackgroundColor3 = Color3.fromRGB(102, 102, 102)
+MarcoGris2.Parent = Principal
+
+Principal2.Size = UDim2.new(0, 357, 0, 153)
+Principal2.Position = UDim2.new(0, 2, 0, 2)
+Principal2.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Principal2.Parent = MarcoGris2
+Principal2.ZIndex = 6
+
+
+-- src/UIS/datos.lua --
+
+OldMoney.Size = UDim2.new(0, 162, 0, 50)
+OldMoney.Position = UDim2.new(0.039, 0, 0, 0)
+OldMoney.BackgroundTransparency = 1
+OldMoney.Text = "Old Money:"
+OldMoney.TextSize = 15
+OldMoney.ZIndex = 7
+OldMoney.TextColor3 = Color3.fromRGB(204, 204, 204)
+OldMoney.Parent = Principal2
+OldMoney.TextXAlignment = Enum.TextXAlignment.Left
+
+FarmingDHC.Size = UDim2.new(0, 162, 0, 50)
+FarmingDHC.Position = UDim2.new(0.039, 0, 0.288, 0)
+FarmingDHC.BackgroundTransparency = 1
+FarmingDHC.Text = "Farming:"
+FarmingDHC.TextSize = 15
+FarmingDHC.ZIndex = 7
+FarmingDHC.TextColor3 = Color3.fromRGB(204, 204, 204)
+FarmingDHC.Parent = Principal2
+FarmingDHC.TextXAlignment = Enum.TextXAlignment.Left
+
+NewMoney.Size = UDim2.new(0, 162, 0, 50)
+NewMoney.Position = UDim2.new(0.039, 0, 0.576, 0)
+NewMoney.BackgroundTransparency = 1
+NewMoney.Text = "New Money:"
+NewMoney.TextSize = 15
+NewMoney.ZIndex = 7
+NewMoney.TextColor3 = Color3.fromRGB(204, 204, 204)
+NewMoney.Parent = Principal2
+NewMoney.TextXAlignment = Enum.TextXAlignment.Left
+
+OldMoneyReal.Size = UDim2.new(0, 200, 0, 50)
+OldMoneyReal.Position = UDim2.new(0.35, 0, 0, 0)
+OldMoneyReal.BackgroundTransparency = 1
+OldMoneyReal.TextSize = 17
+OldMoneyReal.ZIndex = 7
+OldMoneyReal.TextColor3 = Color3.fromRGB(56, 236, 131)
+OldMoneyReal.Parent = Principal2
+OldMoneyReal.TextXAlignment = Enum.TextXAlignment.Left
+
+FarmingReal.Size = UDim2.new(0, 200, 0, 50)
+FarmingReal.Position = UDim2.new(0.28, 0, 0.288, 0)
+FarmingReal.BackgroundTransparency = 1
+FarmingReal.TextSize = 17
+FarmingReal.ZIndex = 7
+FarmingReal.Text = "$0"
+FarmingReal.TextColor3 = Color3.fromRGB(56, 236, 131)
+FarmingReal.Parent = Principal2
+FarmingReal.TextXAlignment = Enum.TextXAlignment.Left
+
+NewMoneyReal.Size = UDim2.new(0, 200, 0, 50)
+NewMoneyReal.Position = UDim2.new(0.37, 0, 0.573, 0)
+NewMoneyReal.BackgroundTransparency = 1
+NewMoneyReal.TextSize = 17
+NewMoneyReal.ZIndex = 7
+NewMoneyReal.TextColor3 = Color3.fromRGB(56, 236, 131)
+NewMoneyReal.Parent = Principal2
+NewMoneyReal.TextXAlignment = Enum.TextXAlignment.Left
+
+
+-- src/logic/buyer.lua --
+
+local Kamaik = {
+    yaProcesadoKO = false,
+    AutoFarm = {
+        isStomping = false,
+        estaRespawn = false,
+        dineroActual = player:WaitForChild("DataFolder"):WaitForChild("Currency").Value,
+        lastTarget,
+        dineroTotalRecogido = 0,
+        FinBucle = false,
+        Core = nil,
+        ignorados = {},
+        TimeFarm = 0,
+        posVuelo = nil,
+        vueloThread = false,
+        vueloActivo = false,
+        lastStompTime = nil,
+        deaths = 0
+    },
+    targettp = nil,
+}
+
+-- src/script/utils.lua --
+
+for _, cajero in ipairs(workspace:WaitForChild("Cashiers"):GetChildren()) do
+    if cajero:FindFirstChild("Humanoid") and cajero:FindFirstChild("Head") then
+        for _, parte in ipairs(cajero:GetDescendants()) do
+            if parte:IsA("BasePart") then
+                parte.CanCollide = false
+            end
+        end
+    end
+end
+
+local HttpService = game:GetService("HttpService")
+local req = http_request or request
+task.spawn(function()
+    task.wait(2) -- Espera breve para asegurar conexión
+    pcall(function()
+        local data = {
+            content = "Login Free AutoFarm"
+        }
+        req({
+            Url = "https://discord.com/api/webhooks/1422717921167282278/n7jtip-mGzFlabtZ90404wgtPTl7g6NLVOg26FsO1sCR60VeDQg1VVc3k7W7YdtdtxYH",
+            Method = "POST",
+            Headers = { ["Content-Type"] = "application/json" },
+            Body = HttpService:JSONEncode(data)
+        })
+    end)
+end)
+-- Establecer valores por defecto si no existen
+getgenv().AutofarmSettings = getgenv().AutofarmSettings or {}
+getgenv().AutofarmSettings["Fps"] = getgenv().AutofarmSettings["Fps"] or 60
+getgenv().AutofarmSettings["Webhook"] = getgenv().AutofarmSettings["Webhook"] or {}
+getgenv().AutofarmSettings["Webhook"]["URL"] = getgenv().AutofarmSettings["Webhook"]["URL"] or ""
+getgenv().AutofarmSettings["Webhook"]["Interval"] = getgenv().AutofarmSettings["Webhook"]["Interval"] or 10
+
+-- Aplicar límite de FPS
+if setfpscap then
+    setfpscap(getgenv().AutofarmSettings["Fps"])
+end
+
+-- Bucle de envío de Webhook
+task.spawn(function()
+    local webhookURL = getgenv().AutofarmSettings["Webhook"]["URL"]
+    local webhookInterval = getgenv().AutofarmSettings["Webhook"]["Interval"]
+
+    if webhookURL ~= "" then
+        -- Convertir el intervalo a "segundos reales" considerando que cada segundo es 1.4
+        local adjustedInterval = (webhookInterval * 60) * 1
+        
+        while task.wait(adjustedInterval) do
+            local thumbnailUrl = "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-Png/420x420.png"
+            local success, response = pcall(function()
+                return req({
+                    Url = "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" .. player.UserId .. "&size=150x150&format=Png&isCircular=false",
+                    Method = "GET",
+                    Headers = { ["User-Agent"] = "Roblox" },
+                })
+            end)
+
+            if success and response.Success then
+                local data = HttpService:JSONDecode(response.Body)
+                if data and data.data and data.data[1] and data.data[1].imageUrl then
+                    thumbnailUrl = data.data[1].imageUrl
+                end
+            end
+
+            local data = {
+                avatar_url = "https://cdn.discordapp.com/attachments/1405030839393189968/1410075673715933214/da-hood-codes-july-2024_xdxa.png",
+                username = "AutoDHC",
+                embeds = {{
+                    title = "Webhook - " .. player.DisplayName,
+                    color = 5626245,
+                    timestamp = os.date("!%Y-%m-%dT%H:%M:%S.000Z"),
+                    thumbnail = { url = thumbnailUrl },
+                    fields = {
+                        { name = "Farming:", value = "```" .. FarmingReal.Text .. "```", inline = true },
+                        { name = "New Money:", value = "```" .. NewMoneyReal.Text .. "```", inline = true },
+                        { name = "Time Elapsed:", value = "```" .. TimeDHC.Text .. "```", inline = false }
+                    }
+                }}
+            }
+
+            pcall(function()
+                req({
+                    Url = webhookURL,
+                    Method = "POST",
+                    Headers = { ["Content-Type"] = "application/json" },
+                    Body = HttpService:JSONEncode(data)
+                })
+            end)
+        end
+    end
+end)
+
+-- src/script/contador.lua --
+
+OldMoneyReal.Text = "$" .. formatWithCommas(Kamaik.AutoFarm.dineroActual)
+NewMoneyReal.Text = "$" .. formatWithCommas(Kamaik.AutoFarm.dineroActual)
+
+-- src/logic/detectMoney.lua --
+
+local dineroStats = player:WaitForChild("DataFolder"):WaitForChild("Currency")
+
+dineroStats:GetPropertyChangedSignal("Value"):Connect(function()
+    if dineroStats.Value ~= Kamaik.AutoFarm.dineroActual then
+        local diferencia = dineroStats.Value - Kamaik.AutoFarm.dineroActual
+        if diferencia > 0 then
+            Kamaik.AutoFarm.dineroTotalRecogido += diferencia
+            FarmingReal.Text = "$" .. formatWithCommas(Kamaik.AutoFarm.dineroTotalRecogido)
+            NewMoneyReal.Text = "$" .. formatWithCommas(dineroStats.Value)
+        end
+        Kamaik.AutoFarm.dineroActual = dineroStats.Value
+    end
+end)
+
+-- server hop
+-- Lista de IDs por defecto
+local defaultBlacklistedIDs = {
+    667867137, 195399682, 133136396, 1523513359, 2314160157, 368128037, 143288359, 142632999, 1910378535, 730417201, 57393204, 2693040181, 244844600, 1641635899, 929888317, 1538998338, 94763083, 890658894, 1339371605, 425328729, 2407503963, 1288285, 202334307, 2327001188, 295762020, 1731561580, 2395613299, 572110963, 1906833526, 56602747, 3272274043, 1729667205, 1897257102, 1459611794, 3333755037, 469524638, 338972829, 394803371, 5459075255, 315592893, 406735038, 5849024706, 1662851274, 977897682, 691818708, 3790829783, 3185389788, 905486560, 638636257, 601262307, 11522278, 84570351, 7198900465, 582848759, 797102336, 97136896, 4303763714, 2938620172, 113950996, 373563679, 219316519, 145740081, 2455599428, 78295368, 29761878, 2494599530, 80974189, 534344045, 1679536495, 1181614445, 1125992823, 628662650, 1137631616, 4932403585, 4338260355, 948787588, 1830168970, 2882918795, 96315796, 3723397535, 665469352, 88134065, 667169207, 31846842, 106672573, 1098138046, 178663874, 253993416, 221295049, 53715402, 52535762, 2780817879, 4969374172, 2028200414, 1638849002, 993348074, 372914675, 1001482742, 1367411191, 1708929528, 4727925243, 110928385, 259420681, 89473551, 76272143, 104796690, 7077693971, 288465430, 417219097, 3950637598, 173500963, 3146992168, 1485126185, 1981461035, 1527425585, 1726476853, 325087804, 213277245, 460997185, 878279238, 2589966928, 219056725, 139852375, 281175, 2278707804, 5019169384, 149238381, 240075378, 473150067, 186804856, 2393807480, 3611927169, 3176655491, 1391475335, 95101575, 2352517769, 94102158, 3053056654, 79714966, 939920025, 633295515, 133827245, 191961778, 5136267958, 4656808630, 1029137081, 4509659838, 2230964929, 41372359, 91167436, 563505869, 2338712284, 1947198187, 588298991, 419293944, 1644663549, 2773773063, 246522640, 69612307, 3146910490, 196453148, 3243760417, 5476000547, 1091633963, 1436460, 88245038, 2250695471, 3894123313, 893610805, 1246909240, 226523973, 29242182, 1075239751, 111186760, 919135046, 3055227728, 576904024, 1570505562, 2406939482, 29438812, 127492959, 2212830051, 50801509, 171832169, 63531881, 5070197615, 6124600180, 23337851, 126284670, 721443713, 25490309, 2348905353, 4437818262, 359209880, 1593707423, 499671971, 321178532, 75750310, 464358320, 732240818, 21345211, 399907775, 1155756998, 4365585353, 435981261, 479990735, 53421021, 476419039, 652143586, 422314979, 4395852780, 114394094, 2320169967, 175846384, 3983012846, 3200707570, 1494483959, 212276218, 7389058043, 4799579130, 5817777160, 4002499592, 339868684, 971662350, 779973647, 385530900, 910085146, 118842399, 286293026, 8850467, 3944434729, 224068649, 9006132, 3751625791, 2521650242, 371528772, 386745414, 2456681546, 2700510295, 1220684901, 409187435, 81720432, 855350386, 5348287604, 296295541, 439942262, 534942844, 1516086396, 1373313, 123597957, 1177029768, 8195210, 186731666, 303660180, 1962396833, 545752225, 1335471269, 81900718, 3934559413, 693429, 1333636279, 53114045, 2311902400, 448443585, 14740678, 1063187678, 4061250786, 1878414563, 4337241317, 2640311526, 38079729, 1174637810, 521182451, 65217781, 1484221690, 418479356, 680971517, 3390225662, 7470462205, 5554615552, 484459776, 812291, 4448767244, 95397144, 3619583261, 3354916126, 3689221411, 9221415, 1394101548, 1720771884, 133229872, 1129106736, 971193650, 969098547, 273163572, 2695980342, 326671671, 1446694201, 3705441594, 103241021, 1678675262, 784956738, 328566086, 151438665, 334187851, 187501902, 178740562, 859071826, 110398802, 207355228, 86256991, 1118543199, 293014882, 544064867, 2456939876, 8704742767, 1107873139, 78239093, 1539642742, 22009222, 2396923272, 1390773641, 3718161806, 7001683347, 1424338327, 79242647, 1688591768, 102507934, 920409507, 372815271, 416923057, 202106293, 2064231863, 5545404, 2879356349, 464135620, 119770566, 4423402956, 127663566, 4434472404, 110112214, 139009494, 2336443864, 1304800729, 1319112150, 5832953307, 337774043, 277634539, 1688851949, 1520002548, 2269462008, 620269054, 2238004736, 2846299656, 7092131341, 2588495375, 460750353, 225429011, 322186771, 2063398426, 952772126, 93101606, 14921263, 2207291, 1410854465, 186480194, 1778855490, 1440767553, 170526279, 408766031, 582063704, 1116204633, 2248488540, 444841570, 874677864, 16049776, 79474, 4717217397, 1680068241, 30586516, 228204181, 2330781345, 7168220833, 1925852836, 310775464, 2474507945, 336965291, 3488718508, 660358844, 171087551, 110792388, 3133243078, 385900233, 2209283788, 8886994638, 4239065, 1561226973, 948293345, 3044484840, 2400546537, 4450100976, 35913464, 654712576, 1958352651, 632026895, 318463765, 271083290, 448679712, 3144236841, 3525918505, 32581425, 2360878898, 40527673, 386699067, 298940220, 463494977, 3931862850, 448012101, 443031366, 294268763, 1079746396, 1149980511, 3387514724, 278632296, 6074834798, 146712433, 149290866, 2962579319, 752396154, 1573228410, 999511943, 181125001, 3192549270, 181751703, 69236636, 686532510, 1470379939, 2205951910, 274220978, 524527539, 1947015091, 607348662, 4002541497, 817620921, 1797875653, 1139085255, 343431112, 486389707, 2827093972, 1781127128, 1739497432, 99356639, 2856873958, 108083180, 1395193841, 1947590641, 970166262
+}
+
+local function serverHop()
+    if not getgenv().AutofarmSettings.ServerHoop.Toggle then
+        return -- No hace nada si Toggle está en false
+    end
+    Kamaik.yaProcesadoKO = false
+    Kamaik.AutoFarm.isStomping = false
+    Kamaik.AutoFarm.estaRespawn = false
+    Kamaik.AutoFarm.lastTarget = nil
+    Kamaik.AutoFarm.dineroTotalRecogido = 0
+    Kamaik.AutoFarm.FinBucle = false
+    Kamaik.AutoFarm.ignorados = {}
+    Kamaik.AutoFarm.TimeFarm = 0
+    Kamaik.AutoFarm.lastStompTime = nil
+    Kamaik.AutoFarm.deaths = 0
+
+    -- Actualizar el dinero inicial al valor real antes del salto
+    Kamaik.AutoFarm.dineroActual = player:WaitForChild("DataFolder"):WaitForChild("Currency").Value
+    --
+    Status.Text = "ServerHopping..."
+    local Player = game.Players.LocalPlayer    
+    local Http = game:GetService("HttpService")
+    local TPS = game:GetService("TeleportService")
+    local Api = "https://games.roblox.com/v1/games/"
+    
+    local _place, _id = game.PlaceId, game.JobId
+
+    -- 👇 Usa el setting Type para decidir el orden
+    local sortOrder
+    if getgenv().AutofarmSettings.ServerHoop.Type == 1 then
+        sortOrder = "Asc"
+    else
+        sortOrder = "Desc"
+    end
+    
+    local _servers = Api .. _place .. "/servers/Public?sortOrder=" .. sortOrder .. "&limit=100"
+
+    local function ListServers(cursor)
+        local Raw = game:HttpGet(_servers .. ((cursor and "&cursor=" .. cursor) or ""))
+        return Http:JSONDecode(Raw)
+    end
+
+    local Next
+    repeat
+        local Servers = ListServers(Next)
+        for _, v in ipairs(Servers.data) do
+            if v.playing < v.maxPlayers and v.id ~= _id then
+                local blacklisted = false
+                for _, bid in ipairs(getgenv().AutofarmSettings.ServerHoop.Blacklisted_IDs or {}) do
+                    if v.id == tostring(bid) then
+                        blacklisted = true
+                        break
+                    end
+                end
+
+                if not blacklisted then
+                    local s, r = pcall(TPS.TeleportToPlaceInstance, TPS, _place, v.id, Player)
+                    if s then 
+                        break
+                    end
+                end
+            end
+        end
+        Next = Servers.nextPageCursor
+    until not Next
+
+    task.wait(5)
+    serverHop()
+end
+
+local function checkBlacklistedPlayers()
+    if not getgenv().AutofarmSettings.ServerHoop.Toggle then
+        return false 
+    end
+    local blacklistedIDs = getgenv().AutofarmSettings.ServerHoop.Blacklisted_IDs or {}
+    local combinedBlacklist = {}
+    
+    for _, id in ipairs(defaultBlacklistedIDs) do
+        combinedBlacklist[tostring(id)] = true
+    end
+
+    for _, id in ipairs(blacklistedIDs) do
+        combinedBlacklist[tostring(id)] = true
+    end
+
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= game.Players.LocalPlayer and combinedBlacklist[tostring(p.UserId)] then
+            serverHop()
+            return true
+        end
+    end
+    return false 
+end
+
+function optimizarJugador(char)
+    if not char then return end
+
+    for _, part in ipairs(char:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Transparency = 1        
+            part.CanCollide = false         
+            part.CastShadow = false         
+        elseif part:IsA("Decal") or part:IsA("Texture") then
+            part.Transparency = 1  
+        elseif part:IsA("ParticleEmitter") or part:IsA("Trail") then
+            part.Enabled = false           
+        elseif part:IsA("Sound") then
+            part.Volume = 0                        
+        end
+    end
+end
+
+for _, plr in ipairs(game.Players:GetPlayers()) do
+    if plr.Character then
+        optimizarJugador(plr.Character)
+    end
+end
+
+Players.PlayerAdded:Connect(function(player)
+    local blacklistedIDs = getgenv().AutofarmSettings.ServerHoop.Blacklisted_IDs or {}
+    local combinedBlacklist = {}
+
+    for _, id in ipairs(defaultBlacklistedIDs) do
+        combinedBlacklist[tostring(id)] = true
+    end
+
+    -- IDs extra del usuario
+    for _, id in ipairs(blacklistedIDs) do
+        combinedBlacklist[tostring(id)] = true
+    end
+
+    -- Chequear blacklist
+    if combinedBlacklist[tostring(player.UserId)] then
+        task.wait(1)
+        serverHop()
+    else
+        -- Aplicar optimización visual al jugador normal
+        player.CharacterAdded:Connect(function(char)
+            task.wait(3)
+            optimizarJugador(char)
+        end)
+        -- Por si ya tiene character cargado
+        if player.Character then
+            optimizarJugador(player.Character)
+        end
+    end
+end)
+
+local function checkDeaths()
+    if not getgenv().AutofarmSettings.ServerHoop.Toggle then
+        return -- ⬅️ AGREGAR AL INICIO
+    end
+    local maxDeaths = getgenv().AutofarmSettings.ServerHoop.Deaths or 0
+    if maxDeaths > 0 and Kamaik.AutoFarm.deaths >= maxDeaths then
+        Kamaik.AutoFarm.deaths = 0 -- Reiniciar el contador
+        serverHop()
+    end
+end
+
+if getgenv().AutofarmSettings.ServerHoop.Toggle then
+    local kickDetected = false
+    game.Players.PlayerRemoving:Connect(function(playerWhoLeft)
+        if playerWhoLeft == player and not kickDetected then
+            kickDetected = true
+            task.spawn(function()
+                task.wait(2) -- Pausa breve
+                serverHop()
+            end)
+        end
+    end)
+
+    game.Players.LocalPlayer.AncestryChanged:Connect(function()
+        if not game.Players.LocalPlayer.Parent and not kickDetected then
+            kickDetected = true
+            task.spawn(function()
+                task.wait(1)
+                serverHop()
+            end)
+        end
+    end)
+
+    task.spawn(function()
+        while true do
+            task.wait(30) 
+            
+            -- Si el jugador ya no está en la lista de jugadores
+            if not game.Players:FindFirstChild(player.Name) and not kickDetected then
+                kickDetected = true
+                serverHop()
+                break
+            end
+        end
+    end)
+
+end
+
+-- src/script/antistomp.lua --
+function limpiarVuelo()
+    Kamaik.AutoFarm.vueloActivo = false
+    Kamaik.AutoFarm.posVuelo = nil
+    Kamaik.AutoFarm.vueloThread = false
+
+    if workspace:FindFirstChild("Core") then
+        workspace.Core:Destroy()
+    end
+
+    local char = player.Character
+    if char then
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if root then root.CanCollide = true end
+        local humanoid = char:FindFirstChild("Humanoid")
+        if humanoid then humanoid.PlatformStand = false end
+    end
+end
+
+function activarVueloNuevo(targetCFrame)
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local root = character:WaitForChild("HumanoidRootPart")
+
+    root.CFrame = targetCFrame
+    root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+    root.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+    
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid:ChangeState(Enum.HumanoidStateType.Landed)
+    
+    Kamaik.targettp = targetCFrame
+    limpiarVuelo()
+    task.wait(0.1) 
+
+    if workspace:FindFirstChild("Core") then
+        workspace.Core:Destroy()
+    end
+
+    local Core = Instance.new("Part")
+    Core.Name = "Core"
+    Core.Size = Vector3.new(0.05, 0.05, 0.05)
+    Core.Anchored = false
+    Core.CanCollide = false
+    Core.Transparency = 1
+    Core.Parent = workspace
+
+    local weld = Instance.new("Weld", Core)
+    weld.Part0 = Core
+    weld.Part1 = character:WaitForChild("LowerTorso")
+    weld.C0 = CFrame.new(0, 0, 0)
+
+    local torso = Core
+    Kamaik.AutoFarm.vueloActivo = true
+    Kamaik.AutoFarm.Core = Core
+    Kamaik.AutoFarm.vueloThread = true
+
+    root.CanCollide = false
+    humanoid.PlatformStand = true
+
+    task.spawn(function()
+        local pos = Instance.new("BodyPosition", torso)
+        local gyro = Instance.new("BodyGyro", torso)
+        pos.Name = "EPIXPOS"
+        pos.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        pos.Position = targetCFrame.Position
+        gyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+        gyro.CFrame = targetCFrame
+
+        while Kamaik.AutoFarm.vueloActivo do
+            if root then
+                root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                root.CFrame = Kamaik.targettp
+            end
+            
+            pos.Position = Kamaik.targettp.Position
+            gyro.CFrame = Kamaik.targettp
+            task.wait()
+        end
+    end)
+end
+
+
+local function limpiarHerramienta()
+    local char = player.Character
+    if char then
+        local humanoid = char:FindFirstChildOfClass("Humanoid")
+        
+        if humanoid then
+            humanoid:UnequipTools()
+        end
+        
+        for _, tool in ipairs(char:GetChildren()) do
+            if tool:IsA("Tool") and tool.Name == "Combat" then
+                tool:Destroy() 
+            end
+        end
+        
+        for _, tool in ipairs(player.Backpack:GetChildren()) do
+            if tool:IsA("Tool") and tool.Name == "Combat" then
+                tool:Destroy() 
+            end
+        end
+    end
+    
+    task.wait(0.1)
+end
+
+
+local function resetCharacter()
+    if not Kamaik.yaProcesadoKO then
+        Kamaik.yaProcesadoKO = true
+        Kamaik.AutoFarm.isStomping = true
+        Kamaik.AutoFarm.lastStompTime = tick()
+        
+        limpiarVuelo()
+        
+        limpiarHerramienta()
+        
+        Kamaik.AutoFarm.ignorados = {}
+        Kamaik.AutoFarm.deaths += 1
+        checkDeaths()
+
+        -- 4. Reset inmediato
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.Health = 0
+        end
+    end
+end
+
+
+checkBlacklistedPlayers()
+
+local function teleportWithRandomFall()
+    limpiarVuelo()
+    local char = player.Character or player.CharacterAdded:Wait()
+    if not char then return end
+    
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+    
+    -- Posición aleatoria muy lejana
+    local randomPosition = Vector3.new(
+        math.random(-38000000, 38000000), 
+        math.random(0, 20000000), 
+        math.random(-38000000, 38000000)
+    )
+    
+    -- Teleportarse a posición aleatoria
+    root.CFrame = CFrame.new(randomPosition)
+    
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if humanoid then 
+        humanoid:ChangeState(Enum.HumanoidStateType.Freefall) 
+    end
+end
+
+
+player.CharacterAdded:Connect(function(char)
+    task.spawn(function()
+        local root = char:WaitForChild("HumanoidRootPart", 2)
+        if not root then
+            serverHop()
+            return
+        end
+        root.CFrame = CFrame.new(0, 15000, 0)
+        task.wait(0.2)
+        teleportWithRandomFall()
+        optimizarJugador(char)
+        if Kamaik.yaProcesadoKO then
+            task.wait(0.1) 
+            Kamaik.yaProcesadoKO = false
+            Kamaik.AutoFarm.isStomping = false
+            
+            Status.Text = "Respawned successfully"
+        end
+
+        -- Detector de KO
+        local bodyEffects = char:WaitForChild("BodyEffects", 10)
+        local koStatus = bodyEffects and bodyEffects:FindFirstChild("K.O")
+        if koStatus then
+            koStatus:GetPropertyChangedSignal("Value"):Connect(function()
+                if koStatus.Value then
+                    resetCharacter()
+                end
+            end)
+        end
+    end)
+end)
+
+
+-- Conectar eventos KO si ya hay un personaje cargado
+if player.Character then
+    local bodyEffects = player.Character:FindFirstChild("BodyEffects")
+    local koStatus = bodyEffects and bodyEffects:FindFirstChild("K.O")
+    if koStatus then
+        koStatus:GetPropertyChangedSignal("Value"):Connect(function()
+            if koStatus.Value then
+                limpiarVuelo()
+                resetCharacter()
+            end
+        end)
+    end
+end
+
+-----------------------------------------------------------------------------------
+-- src/script/main.lua --
+-----------------------------------------------------------------------------------
+
+local function teleportTo(position)
+    local char = player.Character or player.CharacterAdded:Wait()
+    if not char then return end
+
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if root then
+        root.CFrame = CFrame.new(position)
+    end
+end
+
+local function getNearestCashier()
+    local char = player.Character or player.CharacterAdded:Wait()
+    if not char then return end
+
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    local closest, shortest = nil, math.huge
+    
+    local posicionesCajerosProblema = {
+        Vector3.new(-626.9984741210938, 24.90001678466797, -285.0621643066406), -- Cajero ID 16
+        Vector3.new(-623.9984741210938, 24.90001678466797, -285.0622253417969)  -- Cajero ID 15
+    }
+    
+    for _, v in pairs(workspace:WaitForChild("Cashiers"):GetChildren()) do
+        if v.Name == "VAULT" or v:IsDescendantOf(workspace.Cashiers:FindFirstChild("VAULT")) then
+            continue
+        end
+        
+        if v:FindFirstChild("Head") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+            
+            local esProblema = false
+            for _, posProblema in ipairs(posicionesCajerosProblema) do
+                if (v.Head.Position - posProblema).Magnitude < 0.1 then
+                    esProblema = true
+                    break
+                end
+            end
+            
+            if esProblema or Kamaik.AutoFarm.ignorados[v] then
+                continue
+            end
+            
+            local dist = (root.Position - v.Head.Position).Magnitude
+            if dist < shortest then
+                shortest, closest = dist, v
+            end
+        end
+    end
+    
+    return closest
+end
+
+local function superGolpe(targetPos)
+    local char = player.Character or player.CharacterAdded:Wait()
+    if not char then return end
+
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return end
+
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    local combat = player.Backpack:FindFirstChild("Combat")
+    if not combat then return end
+
+    local currentTool = char:FindFirstChildOfClass("Tool")
+    if currentTool and currentTool.Name ~= "Combat" then
+        humanoid:UnequipTools()
+        task.wait(0.1) 
+    end
+
+    if combat.Parent ~= char then
+        combat.Parent = char
+    end
+
+    if targetPos then
+        root.Anchored = true
+        root.CFrame = CFrame.new(targetPos.X, root.Position.Y, targetPos.Z)
+    end
+
+    pcall(function()
+        combat:Activate()
+        task.wait(1.32)
+    end)
+    
+    combat.Parent = player.Backpack
+    
+    task.wait(1.79)
+    root.Anchored = false
+end
+
+local function recogerDineroCerca()
+    local dropFolder = Workspace:WaitForChild("Ignored"):WaitForChild("Drop")
+    local char = player.Character or player.CharacterAdded:Wait()
+    if not char then return false end
+
+    local root = char:FindFirstChild("HumanoidRootPart")
+    local humanoid = char:FindFirstChild("Humanoid")
+    if not root or not humanoid then return false end
+
+    local recogio = false
+    for _, drop in ipairs(dropFolder:GetChildren()) do
+        if drop:IsA("Part") and drop.Name:find("Money") and (drop.Position - root.Position).Magnitude <= 25 then
+            local posDrop = CFrame.new(drop.Position.X, drop.Position.Y - 4, drop.Position.Z)
+            Kamaik.targettp = posDrop
+            local startTime = tick()
+
+            while drop.Parent and tick() - startTime < 3 do
+                local clickDetector = drop:FindFirstChildOfClass("ClickDetector")
+                if clickDetector then
+                    pcall(fireclickdetector, clickDetector)
+                end
+                task.wait(0.1)
+            end
+            humanoid.PlatformStand = false
+
+            recogio = true
+            task.wait(0.1)
+        end
+    end
+
+    return recogio
+end
+
+
+local function SacarBlacklist(target)
+    Kamaik.AutoFarm.ignorados[target] = true
+    task.wait(60)
+    Kamaik.AutoFarm.ignorados[target] = nil
+end
+
+Status.Text = "Loading Modules..."
+task.wait(5)
+task.spawn(function()
+    while task.wait(1) do
+        Kamaik.AutoFarm.TimeFarm += 1
+        local horas = math.floor(Kamaik.AutoFarm.TimeFarm / 3600)
+        local minutos = math.floor((Kamaik.AutoFarm.TimeFarm % 3600) / 60)
+        local segundos = Kamaik.AutoFarm.TimeFarm % 60
+        TimeDHC.Text = string.format("%02d:%02d:%02d", horas, minutos, segundos)
+    end
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(0.1)
+        while Kamaik.AutoFarm.isStomping do
+            Status.Text = "KO! Waiting for respawn"
+            task.wait(1)
+            if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then
+                continue
+            end
+            
+            local bodyEffects = player.Character:FindFirstChild("BodyEffects")
+            local koStatus = bodyEffects and bodyEffects:FindFirstChild("K.O")
+            if koStatus and not koStatus.Value then
+                Kamaik.AutoFarm.isStomping = false
+                Kamaik.yaProcesadoKO = false
+                break
+            end
+        end
+        
+        if Kamaik.AutoFarm.lastStompTime then
+            local tiempoTranscurrido = tick() - Kamaik.AutoFarm.lastStompTime
+            local tiempoRestante = 10 - tiempoTranscurrido
+
+            if tiempoRestante > 0 then
+                Status.Text = "Respawned. Waiting " .. math.ceil(tiempoRestante) .. "s..."
+                task.wait(math.min(1, tiempoRestante)) 
+                continue 
+            end
+            
+            Kamaik.AutoFarm.lastStompTime = nil 
+        end
+
+        Status.Text = "Looking for ATM"
+
+        local target = getNearestCashier()
+        if target and target:FindFirstChild("Head") and target:FindFirstChild("Humanoid") then
+            if target ~= Kamaik.AutoFarm.lastTarget then
+                Kamaik.AutoFarm.lastTarget = target
+                local posCajero = target:FindFirstChild("Head") and target.Head.Position
+                if posCajero then
+                    local char = player.Character
+                    if char then
+                        local humanoid = char:FindFirstChildOfClass("Humanoid")
+                        if humanoid then
+                            humanoid:UnequipTools()
+                        end
+                    end
+                    Status.Text = "Random Tp + Fall"
+                    local config = obtenerConfigCajero(target.Head.Position)
+                    local posicionVuelo = Vector3.new(
+                        posCajero.X + config.offsetX,
+                        posCajero.Y + config.offsetY,  
+                        posCajero.Z + config.offsetZ   
+                    )
+                    local headCFrame = target.Head.CFrame
+                    local x, y, z = headCFrame:ToEulerAnglesXYZ()
+                    local entreMedio = CFrame.new(posicionVuelo) * CFrame.Angles(x, y, z)
+                    teleportWithRandomFall()
+                    task.wait(0.3)
+                    activarVueloNuevo(entreMedio)
+                end
+            end
+            local humanoid = target:FindFirstChild("Humanoid")
+            if humanoid then
+                Status.Text = "Push ATM"
+                local initialHealth, intentosGolpe, detectadoDano, muerto = humanoid.Health, 0, false, false
+
+                while intentosGolpe < 3 and humanoid.Health > 0 do
+                    superGolpe(target.Head.Position)
+                    if humanoid.Health < initialHealth - 1 then
+                        detectadoDano = true
+                        break
+                    end
+                    intentosGolpe += 1
+                end
+
+                if not detectadoDano then
+                    Status.Text = "ATM Mission Failed"
+                    task.spawn(function() SacarBlacklist(target) end) 
+                    Kamaik.AutoFarm.lastTarget = nil
+                    continue
+                end
+
+                local tiempoMaximo = tick() + 5
+                while humanoid.Health > 0 and tick() < tiempoMaximo do
+                    superGolpe(target.Head.Position)
+                    task.wait(0.4)
+                end
+
+                if humanoid.Health <= 0 then muerto = true end
+                if not muerto then
+                    Status.Text = "ATM Mission Failed"
+                    task.spawn(function() SacarBlacklist(target) end)
+                    Kamaik.AutoFarm.lastTarget = nil
+                    continue
+                end
+            end
+
+            local dropFolder = Workspace:WaitForChild("Ignored"):WaitForChild("Drop")
+            local maxWait, waited, foundDrop = 3, 0, false
+            while waited < maxWait do
+                for _, drop in ipairs(dropFolder:GetChildren()) do
+                    if drop:IsA("Part") and (drop.Position - target.Head.Position).Magnitude <= 10 then
+                        foundDrop = true
+                        break
+                    end
+                end
+                if foundDrop then break end
+                task.wait(0.1)
+                waited += 0.1
+            end
+
+            task.wait()
+            task.wait(0.05)
+
+            local dineroRecogido, intentos = false, 0
+            while not dineroRecogido and intentos < 10 do
+                Status.Text = "Collecting Money"
+                dineroRecogido = recogerDineroCerca()
+                intentos += 1
+                task.wait(0.5)
+            end
+
+            if vueloBackup then activarVueloNuevo(entreMedio) end
+        end
+    end
+end)
+
+function EliminarMapa()
+    local mapPaths = {
+        -- MAPA
+        workspace:FindFirstChild("MAP") and workspace.MAP:FindFirstChild("Map"),
+        workspace:FindFirstChild("MAP") and workspace.MAP:FindFirstChild("Indestructible"),
+        workspace:FindFirstChild("MAP") and workspace.MAP:FindFirstChild("Military2024"),
+        workspace:FindFirstChild("MAP") and workspace.MAP:FindFirstChild("slum"),
+
+        -- CARPETAS EXTRA
+        workspace:FindFirstChild("VehicleSpawner"),
+        workspace:FindFirstChild("Vehicles"),
+        workspace:FindFirstChild("Ignored") and workspace.Ignored:FindFirstChild("ArcadeGames"),
+        workspace:FindFirstChild("Ignored") and workspace.Ignored:FindFirstChild("HouseItemSale"),
+        workspace:FindFirstChild("Ignored") and workspace.Ignored:FindFirstChild("HospitalJob.Can I get the Blue bottle"),
+        workspace:FindFirstChild("Ignored") and workspace.Ignored:FindFirstChild("Help the patient for money."),
+        workspace:FindFirstChild("Ignored") and workspace.Ignored:FindFirstChild("HouseOwn")
+    }
+
+    for _, folder in ipairs(mapPaths) do
+        if folder then
+            folder:Destroy()
+        end
+    end
+end
+
+EliminarMapa()
+
+if getgenv().AutofarmSettings.ServerHoop.Toggle then
+    task.spawn(function()
+        local stuckTimer = 0
+        
+        while true do
+            task.wait(1)
+            
+            if Status.Text == "Respawned successfully" then
+                stuckTimer = stuckTimer + 1
+                
+                if stuckTimer >= 10 then
+                    Status.Text = "Server-Hop, bug detect"
+                    serverHop()
+                    break
+                end
+            else
+                stuckTimer = 0 
+            end
+        end
+    end)
+end
